@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Conservaround</title>
+<meta name="description" 
+      content="Numbers to human-friendly strings, rounded conservatively">
+<link id="favicon" 
+      rel="icon" 
+      href="https://glitch.com/edit/favicon-app.ico" 
+      type="image/x-icon">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<header>
+<h1>Conservaround</h1>
+</header>
+
+<main>
+
+<form autocomplete="off" id="nform">
+  <input id="nfield" tabindex="1"
+         type="text" size="40" placeholder="123.456">
+  &nbsp; &plusmn; &nbsp; 
+  <input id="quantum" tabindex="2"
+         type="text" size="10" value="0.1">    
+<!--
+  <input type="submit" style="display: none">
+-->
+  &emsp;&emsp;&emsp;
+  <input type="submit" tabindex="3"
+         class="pure-button pure-button-primary">
+</form>
+
+<br>
+
+<table>
+<thead>
+<tr>
+<th><div title="number as the user entered it">input</div></th>
+<th></th>
+<th><div title="human-friendly rounded version">&#x2248;</div></th>
+<th><div title="round conservatively down (err low)">err&#11015;</div></th>
+<th><div title="round conservatively up (err high)">err&#11014;</div></th>
+<th><div title="aka what quantize() returns">inferred<br>precision</div></th>
+</tr>
+</thead>
+<tbody id="ntable">
+</tbody>
+</table>
+
+<!-- 
+&#x1F916; robot face
+&#x1f4bb; computer 
+&#x2248;  approx 
+&#xC6C3;  stick figure
+&#11015;  thick down arrow
+&#11014;  thick up arrow
+-->
+
+</main>
+
+<footer>
+<a href="https://glitch.com/#!/project/conservaround"
+   title="This is where the code for this lives">
+Made by dreev of Beeminder
+</a>
+</footer>
+
+<script src="https://code.jquery.com/jquery-2.2.1.min.js"
+        integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
+        crossorigin="anonymous"></script>
+<script src="/cround.js"></script>
+
+</body>
+</html>
