@@ -90,17 +90,17 @@ const suite = [
 function normberlize(x) {
   x = typeof x == 'string' ? x.trim() : x.toString()  // stringify the input
   const car = x.charAt(0), cdr = x.substr(1)          // 1st char, rest of chars
-  if (car === '+') x = cdr                            // drop the leading '+'
+  if (car === '+') x = cdr                            // drop leading '+'
   if (car === '-') return '-'+normberlize(cdr)        // set aside leading '-'
   x = x.replace(/^0+([^eE])/, '$1')                   // ditch leading zeros
-  const rnum = /^(?:\d+\.?\d*|\.\d+)$/                // eg 2 or 5. or 6.7 or .9
-  if (rnum.test(x)) return x                          // already normal! done!
+  const rnum = /^(?:\d+\.?\d*|\.\d+)$/                // eg 2 or 4. or 6.8 or .10
+  if (rnum.test(x)) return x                          // already normal: done!
   const rsci = /^(\d+\.?\d*|\.\d+)e([+-]?\d+)$/i      // scientific notation
   const marr = x.match(rsci)                          // match array
-  if (!marr || marr.length !== 3) return 'NaN'        // hammer can't parse this
+  if (!marr || marr.length !== 3) return 'NaN'        // hammer cain't parse this
   let [, m, e] = marr                                 // mantissa & exponent
-  let dp = m.indexOf('.')                             // decimal pt position
-  if (dp===-1) dp = m.length                          // (implied decimal pt)
+  let dp = m.indexOf('.')                             // decimal point position
+  if (dp===-1) dp = m.length                          // (implied decimal point)
   dp += +e                                            // scooch scooch
   m = m.replace(/\./, '')                             // mantissa w/o decimal pt
   if (dp < 0) return '.' + '0'.repeat(-dp) + m        // eg 1e-3 -> .001
