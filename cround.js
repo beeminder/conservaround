@@ -129,8 +129,8 @@ function round(x, r=1) {
   if (r < 0) return NaN
   if (r===0) return +x
   const y = Math.round(x/r)
-  const rpow = /^0?\.(0*)1$/   // eg .1 or .01 or .001 -- a negative power of 10
-  const marr = r.toString().match(rpow)   // match array; marr[0] is whole match
+  const rpow = /^0?\.(0*)10*$/ // eg .1 or .01 or .001 -- a negative power of 10
+  const marr = normberlize(r).match(rpow) // match array; marr[0] is whole match
   if (!marr) return y*r
   const p = -marr[1].length-1 // p is the power of 10
   return +normberlize(`${y}e${p}`)
