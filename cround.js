@@ -75,6 +75,7 @@ const suite = [
 [-.01, .01, -.01, -.01, -.01, .01],
 [-.129, .01, -.13, -.13, -.12, .001],
 [-.029, .01, -.03, -.03, -.02, .001],
+['007', 1, 7, 7, 7, 1],
 ]
 
 // mathyval and shownum? 
@@ -93,11 +94,11 @@ function normberlize(x) {
   if (car === '+') x = cdr                            // drop leading '+'
   if (car === '-') return '-'+normberlize(cdr)        // set aside leading '-'
   x = x.replace(/^0+([^eE])/, '$1')                   // ditch leading zeros
-  const rnum = /^(?:\d+\.?\d*|\.\d+)$/                // eg 2 or 4. or 6.8 or .10
+  const rnum = /^(?:\d+\.?\d*|\.\d+)$/                // eg 2 or 3. or 4.5 or .6
   if (rnum.test(x)) return x                          // already normal: done!
   const rsci = /^(\d+\.?\d*|\.\d+)e([+-]?\d+)$/i      // scientific notation
   const marr = x.match(rsci)                          // match array
-  if (!marr || marr.length !== 3) return 'NaN'        // hammer cain't parse this
+  if (!marr || marr.length !== 3) return 'NaN'        // hammer cain't parse dis
   let [, m, e] = marr                                 // mantissa & exponent
   let dp = m.indexOf('.')                             // decimal point position
   if (dp===-1) dp = m.length                          // (implied decimal point)
