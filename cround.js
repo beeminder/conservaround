@@ -234,7 +234,7 @@ function testsuite() {
   })
   return npass + "/" + ntest + " tests passed"
 }
-testsuite() // uncomment when testing and look in the browser console!
+//testsuite() // uncomment when testing and look in the browser console!
 
 
 /******************************************************************************
