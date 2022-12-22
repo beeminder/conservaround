@@ -132,7 +132,13 @@ function quantize(x) {
   return +s                            // return the thing as an actual number
 }
 
-// Round x to nearest r, avoiding floating point crap like 9999*.1=999.900000001
+// Round x to nearest r, defaulting to 1 for rounding to the nearest integer. We
+// expect r to either be an integer, like rounding to the nearest 10 or 1000,
+// or a negative power of 10 like rounding to the nearest .01. Note that r is
+// not a number of decimal places. E.g., if x is an amount of money you'd want
+// tidyround(x, .01) not tidyround(x, 2) which rounds to the nearest even 
+// number. This is all much fancier than the built-in rounding in that it fixes
+// floating point crap like .1+.2 = 0.30000000000000004 or 9999*.1=999.900000001
 // at least when r is an integer or negative power of 10.
 function tidyround(x, r=1) {
   if (r < 0) return NaN
