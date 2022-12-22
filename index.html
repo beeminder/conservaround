@@ -39,7 +39,25 @@
          class="pure-button pure-button-primary">
 </form>
 
+
 <br>
+
+<div id="ancient-browser-warning"></div>
+<script>
+// -----------------------------------------------------------------------------
+function $(id) { return document.getElementById(id) }    // convenience function
+function ancient_browser_check() {
+  "use strict"                         // does this matter?
+  try { eval("let foo = (x)=>x+1") }   // feature detection: "let" & arrow funcs
+  catch (e) { return true }            // bad browser, not understanding ES6
+  return false                         // good browser, not being ancient
+}
+if (ancient_browser_check()) {
+  $('ancient-browser-warning').innerHTML = 
+    "<h1>Ancient browser warning: nothing's gonna work here!</h1>"
+}
+// -----------------------------------------------------------------------------
+</script>
 
 <table>
 <thead>
