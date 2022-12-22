@@ -1,7 +1,10 @@
-// Each row in the test suite has a number or string representation of a number, 
-// a desired precision, what the number should round to at that precision, what 
-// it should conservatively round to erring low, what it should conservatively 
-// round to erring high, and finally what the inferred precision should be.
+// Each row in the test suite has 6 values:
+// 1. a number or string representation of a number
+// 2. a desired precision
+// 3. what the number should round to at that precision
+// 4. what it should conservatively round to erring low
+// 5. what it should conservatively round to erring high
+// 6. what the inferred precision should be
 const suite = [
 ['0', 1, 0, 0, 0, 1],
 [1, .1, 1, 1, 1, 1],
@@ -76,6 +79,9 @@ const suite = [
 [-.129, .01, -.13, -.13, -.12, .001],
 [-.029, .01, -.03, -.03, -.02, .001],
 ['007', 1, 7, 7, 7, 1],
+[12.34, .099999999999999999, 12.3, 12.3, 12.4, .01],
+[45.50, .10000000000000001, 45.5, 45.5, 45.5, .1],
+[7.37, .25, 7.25, 7.25, 7.5, .01],
 ]
 
 // mathyval and shownum? 
@@ -84,6 +90,8 @@ const suite = [
  *                         QUANTIZE AND CONSERVAROUND                         *
  ******************************************************************************/
 
+const round = Math.round
+
 // Normalize number: Return the canonical string representation. Is idempotent.
 // If we were true nerds we'd do it like wikipedia.org/wiki/Normalized_number
 // but instead we're canonicalizing via un-scientific-notation-ing. The other
@@ -91,11 +99,11 @@ const suite = [
 function normberlize(x) {
   x = typeof x == 'string' ? x.trim() : x.toString()  // stringify the input
   const car = x.charAt(0), cdr = x.substr(1)          // 1st char, rest of chars
-  if (car === '+') x = cdr                            // drop leading '+'
+  if (car === '+') x = cdr                            // drop the leading '+'
   if (car === '-') return '-'+normberlize(cdr)        // set aside leading '-'
   x = x.replace(/^0+([^eE])/, '$1')                   // ditch leading zeros
-  const rnum = /^(?:\d+\.?\d*|\.\d+)$/                // eg 2 or 3. or 4.5 or .6
-  if (rnum.test(x)) return x                          // already normal: done!
+  const rnum = /^(?:\d+\.?\d*|\.\d+)$/                // eg 2 or 3. or 6.7 or .9
+  if (rnum.test(x)) return x                          // already normal! done!
   const rsci = /^(\d+\.?\d*|\.\d+)e([+-]?\d+)$/i      // scientific notation
   const marr = x.match(rsci)                          // match array
   if (!marr || marr.length !== 3) return 'NaN'        // hammer cain't parse dis
@@ -126,10 +134,10 @@ function quantize(x) {
 
 // Round x to nearest r, avoiding floating point crap like 9999*.1=999.900000001
 // at least when r is an integer or negative power of 10.
-function round(x, r=1) {
+function tidyround(x, r=1) {
   if (r < 0) return NaN
   if (r===0) return +x
-  const y = Math.round(x/r)
+  const y = round(x/r)
   const rpow = /^0?\.(0*)10*$/ // eg .1 or .01 or .001 -- a negative power of 10
   const marr = normberlize(r).match(rpow) // match array; marr[0] is whole match
   if (!marr) return y*r
@@ -140,11 +148,11 @@ function round(x, r=1) {
 // Round x to the nearest r ... that's >= x if e is +1
 //                          ... that's <= x if e is -1
 function conservaround(x, r=1, e=0) {
-  let y = round(x, r)
+  let y = tidyround(x, r)
   if (e===0) return y
   if (e < 0 && y > x) y -= r
   if (e > 0 && y < x) y += r
-  return round(y, r) // y's already rounded but the +r can fu-loatingpoint it up
+  return tidyround(y, r) // already rounded but the +r can fu-loatingpoint it up
 }
 
 /******************************************************************************
@@ -209,6 +217,8 @@ $('#nfield').keydown(event => {
 let ntest = 0 // count how many tests we do
 let npass = 0 // count how many pass
 
+const CLOG = console.log
+
 // Takes a boolean assertion and a message string, prints a warning to the 
 // browser console if the assertion is false. Also increment the test counter.
 // (But mainly I wanted to just type "assert" instead of "console.assert")
@@ -228,13 +238,19 @@ function testsuite() {
     a2 = conservaround(x, p, -1)
     b2 = conservaround(x, p, +1)
     i2 = quantize(x)
+    // i'd like to make these test failures more readable, with little
+    // checkmarks for outputs that match and maybe "old != new" for those that
+    // don't...
+    // PS: no, wait, pumpkintime.glitch.me has a better version of all this,
+    // showing the test failures on the actual page, not just in the console.
     assert(n2 === n && a2 === a && b2 === b && i2 === i, 
-           `ERROR: ${x} +/- ${p}: `
-           + `${n} -> ${n2}, [${a}, ${b}] -> [${a2}, ${b2}], ${i} -> ${i2}`)
+      `ERROR: ${x} +/- ${p}: `
+      + (n===n2 ? `≈${n}✓` : `${n}→${n2}`)
+      + `, [${a}, ${b}] -> [${a2}, ${b2}], ${i} -> ${i2}`)
   })
   return npass + "/" + ntest + " tests passed"
 }
-//testsuite() // uncomment when testing and look in the browser console!
+CLOG(testsuite()) // uncomment when testing and look in the browser console!
 
 
 /******************************************************************************
