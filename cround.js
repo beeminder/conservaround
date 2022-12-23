@@ -141,13 +141,13 @@ function quantize(x) {
 // floating point crap like .1+.2 = 0.30000000000000004 or 9999*.1=999.900000001
 // at least when r is an integer or negative power of 10.
 function tidyround(x, r=1) {
-  if (r < 0) return NaN
-  if (r===0) return +x
-  const y = round(x/r)
-  const rpow = /^0?\.(0*)10*$/ // eg .1 or .01 or .001 -- a negative power of 10
+  if (r < 0) return NaN   // this makes no sense and probably wants a loud error
+  if (r===0) return +x    // full machine precision!
+  const y = round(x/r)    // naively we'd just be returning r*round(x/r) but....
+  const rpow = /^0?\.(0*)10*$/     // regex for a negative power of 10 like .001
   const marr = normberlize(r).match(rpow) // match array; marr[0] is whole match
-  if (!marr) return y*r
-  const p = -marr[1].length-1 // p is the power of 10
+  if (!marr) return y*r                   // do the naive thing in this case
+  const p = -marr[1].length-1             // p is the power of 10
   return +normberlize(`${y}e${p}`)
 }
 
@@ -155,9 +155,9 @@ function tidyround(x, r=1) {
 //                          ... that's <= x if e is -1
 function conservaround(x, r=1, e=0) {
   let y = tidyround(x, r)
-  if (e===0) return y
-  if (e < 0 && y > x) y -= r
-  if (e > 0 && y < x) y += r
+  if (e===0) return y  // calling this with e=0 is the same as calling tidyround
+  if (e < 0 && y > x) y -= r  // oops, too high and we need to err low
+  if (e > 0 && y < x) y += r  // oops, too low and we need to err high
   return tidyround(y, r) // already rounded but the +r can fu-loatingpoint it up
 }
 
@@ -263,7 +263,7 @@ CLOG(testsuite()) // uncomment when testing and look in the browser console!
  *                      STUFF WE'RE NOT CURRENTLY USING                       *
  ******************************************************************************/
 
-// Polyfills for pre-ES2015 (do we still care about pre-ES2015 in 2019?)
+// Polyfills for pre-ES2015 (do we still care about pre-ES2015 in 2022?)
 /*
 Math.log10 = Math.log10 || function(x) { return Math.log(x) * Math.LOG10E }
 Math.sign = Math.sign || function(x) {
