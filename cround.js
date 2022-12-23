@@ -144,11 +144,9 @@ function tidyround(x, r=1) {
   if (r < 0) return NaN   // this makes no sense and probably wants a loud error
   if (r===0) return +x    // full machine precision!
   const y = round(x/r)    // naively we'd just be returning r*round(x/r) but....
-  const rpow = /^0?\.(0*)10*$/     // regex for a negative power of 10 like .001
-  const marr = normberlize(r).match(rpow) // match array; marr[0] is whole match
-  if (!marr) return y*r                   // do the naive thing in this case
-  const p = -marr[1].length-1             // p is the power of 10
-  return +normberlize(`${y}e${p}`)
+  const marr = r.toExponential().match(/^1e-(\d+)$/)              // match array
+  if (!marr) return y*r                       // do the naive thing in this case
+  return +`${y}e${-marr[1]}`     // put it back together and parse it as a float
 }
 
 // Round x to the nearest r ... that's >= x if e is +1
@@ -156,8 +154,8 @@ function tidyround(x, r=1) {
 function conservaround(x, r=1, e=0) {
   let y = tidyround(x, r)
   if (e===0) return y  // calling this with e=0 is the same as calling tidyround
-  if (e < 0 && y > x) y -= r  // oops, too high and we need to err low
-  if (e > 0 && y < x) y += r  // oops, too low and we need to err high
+  if (e < 0 && y > x) y -= r    // oops, too high and we need to err low
+  if (e > 0 && y < x) y += r    // oops, too low and we need to err high
   return tidyround(y, r) // already rounded but the +r can fu-loatingpoint it up
 }
 
