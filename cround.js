@@ -132,20 +132,21 @@ function quantize(x) {
   return +s                            // return the thing as an actual number
 }
 
-// Round x to nearest r, defaulting to 1 for rounding to the nearest integer. We
-// expect r to either be an integer, like rounding to the nearest 10 or 1000,
-// or a negative power of 10 like rounding to the nearest .01. Note that r is
-// not a number of decimal places. E.g., if x is an amount of money you'd want
-// tidyround(x, .01) not tidyround(x, 2) which rounds to the nearest even 
-// number. This is all much fancier than the built-in rounding in that it fixes
-// floating point crap like .1+.2 = 0.30000000000000004 or 9999*.1=999.900000001
-// at least when r is an integer or negative power of 10.
+// Round x to the nearest r. We expect r to either be an integer, like rounding
+// to the nearest 10 or 1000, or a negative power of 10 like rounding to the 
+// nearest .01. Note that r is not a number of decimal places. E.g., if x is an 
+// amount of money then you'd want tidyround(x, .01) not tidyround(x, 2) which 
+// rounds to the nearest even number. This is similar to just doing round(x/r)*r
+// but it fixes floating point hideousness like if you try to round .34 to the
+// nearest tenth you get round(.34/.1)*.1 = 0.30000000000000004 instead of 0.3.
+// Limitation: We're only guaranteed to avoid such hideousness if r is an
+// integer or a negative power of 10.
 function tidyround(x, r=1) {
   if (r < 0) return NaN   // this makes no sense and probably wants a loud error
   if (r===0) return +x    // full machine precision!
-  const y = round(x/r)    // naively we'd just be returning r*round(x/r) but....
-  const marr = r.toExponential().match(/^1e-(\d+)$/)              // match array
-  if (!marr) return y*r                       // do the naive thing in this case
+  const y = round(x/r)    // naively we'd just be returning round(x/r)*r but...
+  const marr = r.toExponential().match(/^1e-(\d+)$/) // match array for r ~1e-XX
+  if (!marr) return y*r          // do the naive round(x/r)*r thing if no match
   return +`${y}e${-marr[1]}`     // put it back together and parse it as a float
 }
 
