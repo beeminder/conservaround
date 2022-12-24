@@ -146,8 +146,17 @@ function tidyround(x, r=1) {
   if (r===0) return +x    // full machine precision!
   const y = round(x/r)    // naively we'd just be returning round(x/r)*r but...
   const marr = r.toExponential().match(/^1e-(\d+)$/) // match array for r ~1e-XX
-  if (!marr) return y*r          // do the naive round(x/r)*r thing if no match
-  return +`${y}e${-marr[1]}`     // put it back together and parse it as a float
+  if (!marr) return y*r           // do the naive round(x/r)*r thing if no match
+  const dp = +marr[1]         // we're just rounding to this many decimal places
+  return round(x*10**dp)/10**dp
+  //return +`${y}e${-marr[1]}`   // put it back together and parse it as a float
+  // PS: If we know that r is a negative power of ten then it works to just do
+  // round(x*10**dp)/10**dp where dp is the number of decimal places. Eg, to
+  // round to 3 decimal places we can just do round(x*1000)/1000. If we try to 
+  // do round(x/.001)*.001 that can generate floating point hideousness but
+  // round(x*1000)/1000 is fine.
+  // TODO: finish this thought maybe the key is to convert .001 to an integer 
+  // 1000 and go from there?
 }
 
 // Round x to the nearest r ... that's >= x if e is +1
