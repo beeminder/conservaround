@@ -155,8 +155,9 @@ function tidyround(x, r=1) {
   // round to 3 decimal places we can just do round(x*1000)/1000. If we try to 
   // do round(x/.001)*.001 that can generate floating point hideousness but
   // round(x*1000)/1000 is fine.
-  // TODO: finish this thought maybe the key is to convert .001 to an integer 
-  // 1000 and go from there?
+  // PPS: It may also work to do this:
+  // Round x to dp decimal places. So dp=0 means normal integer rounding.
+  // function roundp(x, dp=0) { return Number.parseFloat(x.toFixed(dp)) }
 }
 
 // Round x to the nearest r ... that's >= x if e is +1
