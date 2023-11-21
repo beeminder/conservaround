@@ -133,13 +133,12 @@ function quantize(x) {
   return +s                            // return the thing as an actual number
 }
 
-// Round x to the nearest r. We expect r to either be an integer, like rounding
-// to the nearest 10 or 1000, or a negative power of 10 like rounding to the 
-// nearest .01. Note that r is not a number of decimal places. E.g., if x is an 
-// amount of money then you'd want tidyround(x, .01) not tidyround(x, 2) which 
-// rounds to the nearest even number. This is similar to just doing round(x/r)*r
-// but it fixes floating point hideousness like if you try to round .34 to the
-// nearest tenth you get round(.34/.1)*.1 = 0.30000000000000004 instead of 0.3.
+// Round x to the nearest r. Eg, tidyround(1.6666, .01) returns 1.67 and 
+// tidyround(57, 2) returns 58, i.e., rounding to the nearest even number (not 2
+// decimal places!).
+// Technical note: This is similar to just doing round(x/r)*r but it fixes
+// floating point hideousness like if you try to round .34 to the nearest tenth
+// you get round(.34/.1)*.1 = 0.30000000000000004 instead of 0.3.
 // Limitation: We're only guaranteed to avoid such hideousness if r is an
 // integer or a negative power of 10.
 function tidyround(x, r=1) {
@@ -150,16 +149,24 @@ function tidyround(x, r=1) {
   if (!marr) return y*r           // do the naive round(x/r)*r thing if no match
   const dp = +marr[1]         // we're just rounding to this many decimal places
   return round(x*10**dp)/10**dp
-  //return +`${y}e${-marr[1]}`   // put it back together and parse it as a float
-  // PS: If we know that r is a negative power of ten then it works to just do
-  // round(x*10**dp)/10**dp where dp is the number of decimal places. Eg, to
-  // round to 3 decimal places we can just do round(x*1000)/1000. If we try to 
-  // do round(x/.001)*.001 that can generate floating point hideousness but
-  // round(x*1000)/1000 is fine.
-  // PPS: It may also work to do this:
-  // Round x to dp decimal places. So dp=0 means normal integer rounding.
-  // function roundp(x, dp=0) { return Number.parseFloat(x.toFixed(dp)) }
 }
+
+/* More notes on tidyround():
+
+Instead of round(x*10^dp)/10^dp where dp is the number of decimal places, we 
+could string-append the original exponent part of the scientific notation onto
+round(x/r) and parse it as a float: return +`${y}e${-marr[1]}`
+
+If we know that r is a negative power of ten then it works to just do 
+round(x*10**dp)/10**dp where dp is the number of decimal places. Eg, to round to
+3 decimal places we can just do round(x*1000)/1000. If we try to do
+round(x/.001)*.001 that can generate floating point hideousness but 
+round(x*1000)/1000 is fine.
+
+Here's another potential way to do tidyround:
+// Round x to dp decimal places. So dp=0 means normal integer rounding.
+function roundp(x, dp=0) { return Number.parseFloat(x.toFixed(dp)) }
+*/
 
 // Round x to the nearest r ... that's >= x if e is +1
 //                          ... that's <= x if e is -1
