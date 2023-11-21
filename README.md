@@ -10,6 +10,7 @@ high side, in which case it would round to "3.1" or "4" or whatever, depending o
 
 Changelog:
 
+2023-11-20: cleanup of the tidyround() function
 2019-11-23: bugfix  
 2019-06-21: switch to all client-side code  
 2017-01-20: spec'd and stubbed  
