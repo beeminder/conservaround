@@ -1,16 +1,16 @@
-The idea is to write a show-number function for displaying numbers to 
-normal people that doesn't resort to scientific notation 
-(e.g., show "2M" or "2 million" instead of "1e6")
-and is easily portable between Javascript, Ruby, and Python.
+The idea is to write a showNumber function for displaying numbers to normal 
+people that doesn't resort to scientific notation (e.g., show "2M" or 
+"2 million" instead of "1e6") and is easily portable between Javascript, Ruby, 
+and Python.
 
-Also it should have a parameter for the conservative direction 
--- down (-1) or up (+1) -- to round. 
-So if the number is 3.001 that rounds to "3" unless we need to err on the 
-high side, in which case it would round to "3.1" or "4" or whatever, depending on desired precision.
+Also it should have a parameter for the conservative direction -- down (-1) or 
+up (+1) -- to round. So if the number is 3.001 that rounds to "3" unless we need
+to err on the high side, in which case it would round to "3.1" or "4" or 
+whatever, depending on desired precision.
 
 Changelog:
 
-2023-11-20: cleanup of the tidyround() function
+2023-11-20: cleanup of the tidyround() function  
 2019-11-23: bugfix  
 2019-06-21: switch to all client-side code  
 2017-01-20: spec'd and stubbed  
