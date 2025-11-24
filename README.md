@@ -8,6 +8,9 @@ up (+1) -- to round. So if the number is 3.001 that rounds to "3" unless we need
 to err on the high side, in which case it would round to "3.1" or "4" or 
 whatever, depending on desired precision.
 
+Demo at 
+<https://beeminder.github.io/conservaround>
+
 Changelog:
 
 2023-11-20: cleanup of the tidyround() function  
